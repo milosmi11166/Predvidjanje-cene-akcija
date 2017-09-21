@@ -4,7 +4,7 @@ import datetime
 
 
 def plotResults(testSet, predictions, stockname):
-    plt.figure("Stock price prediction using KNN Regressor")
+    plt.figure("KNN Regression")
     plt.title("Prediction vs Actual Trend of " + stockname)
     plt.legend(loc="best")
     row = []

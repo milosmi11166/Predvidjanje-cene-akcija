@@ -29,3 +29,16 @@ def loadDataset(filename, split, trainingSet=[], testSet=[], content_header=[]):
                 trainingSet.append(dataset[x])
             else:
                 testSet.append(dataset[x])
+
+
+def loadDatasetSeparate(filename, split, trainingSet=[], testSet=[], content_header=[]):
+    with open(filename, 'rb') as csvfile:
+        lines = csv.reader(csvfile)
+        dataset = list(lines)
+        for x in range(len(dataset) - 1):
+            for y in range(1, len(content_header) - 1):
+                dataset[x][y] = float(dataset[x][y])
+            if x < (len(dataset)*split):
+                trainingSet.append(dataset[x])
+            else:
+                testSet.append(dataset[x])

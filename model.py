@@ -2,7 +2,7 @@ import math
 import operator
 
 
-from data_fetch import loadDataset, getData
+from data_fetch import loadDataset, loadDatasetSeparate, getData
 from plot import plotResults
 
 
@@ -15,7 +15,7 @@ def euclideanDistance(instance1, instance2, length):
 
 
 
-def getNeighbors(trainingSet, testInstance, k):
+def getNeighborsWithWeights(trainingSet, testInstance, k):
     distance = []
     length = len(testInstance) - 1
 
@@ -26,7 +26,7 @@ def getNeighbors(trainingSet, testInstance, k):
     distance.sort(key=operator.itemgetter(1))
     neighbors = []
     for x in range(k):
-        neighbors.append(distance[x][0])
+        neighbors.append(distance[x])
     return neighbors
 
 
@@ -39,11 +39,15 @@ def mse(predicted, testSet):
 
 
 
-def getResp(neighbors):
+def getRespWithWeights(neighbors):
+    rec_dist_sq = 0.0
+    for x in range(len(neighbors)):
+	rec_dist_sq += (1/((neighbors[x][1])**2))
+
     response = 0.0
     for x in range(len(neighbors)):
-	response += neighbors[x][-1]
-    return response/len(neighbors)
+	response += (((1/neighbors[x][1]**2)/rec_dist_sq)*neighbors[x][0][-1])
+    return response
 
 
 
@@ -64,8 +68,9 @@ def predictFor(k, filename, stockname, startdate, enddate, writeAgain, split):
     print("Total: " + repr(len(trainingSet) + len(testSet)))
     predictions = []
     for x in range(len(testSet)):
-        neighbors = getNeighbors(trainingSet, testSet[x], k)
-        result = getResp(neighbors)
+	print(testSet[x])
+        neighbors = getNeighborsWithWeights(trainingSet, testSet[x], k)
+        result = getRespWithWeights(neighbors)
 	predictions.append(result)
 
     error = mse(predictions, testSet)
